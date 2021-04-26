@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Moovle',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        accentColor: Colors.indigo,
         primarySwatch: Colors.blue,
       ),
       routes: {

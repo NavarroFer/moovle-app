@@ -1,6 +1,7 @@
-import 'package:dropdown_search/dropdown_search.dart';
+// import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:moovle/src/models/producto_model.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 
@@ -14,59 +15,86 @@ class NuevaVentaPage extends StatefulWidget {
 class _NuevaVentaPageState extends State<NuevaVentaPage> {
   // final _formKey = GlobalKey<FormState>();
   // final _openDropDownProgKey = GlobalKey<DropdownSearchState<String>>();
-  final List<DropdownMenuItem> items = [];
-  String selectedValue;
+  final List<DropdownMenuItem<Producto>> productos = [];
+  final List<DropdownMenuItem> patas = [];
+  int selectedValue;
   TextStyle styleLabels = TextStyle(fontSize: 15);
   TextStyle styleTituloCard =
       TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
   List<Widget> opcionesSillon;
-  final _cantDivisionesController = TextEditingController();
+  final _cantDivisionesReespladoController = TextEditingController();
+  final _cantDivisionesAlmohadonesController = TextEditingController();
   final _comentarioController = TextEditingController();
+  final _cantSillasController = TextEditingController();
   bool esEstiradoReespaldo = false;
   bool esEstiradoAlmohadones = false;
   bool cambiarPatas = false;
+  bool botonesBottom;
+  int categoria;
+  int tipo;
   @override
   void initState() {
-    items.add(DropdownMenuItem(
+    productos.add(DropdownMenuItem(
       child: Text('Sillon 1.6'),
-      value: 1,
+      value:
+          Producto(id: 1, nombre: 'Sillon 1.6m', precio: 45000, categoria: 1),
     ));
-    items.add(DropdownMenuItem(
+    productos.add(DropdownMenuItem(
       child: Text('Sillon 1.8'),
-      value: 2,
+      value:
+          Producto(id: 2, nombre: 'Sillon 1.8m', precio: 53000, categoria: 1),
     ));
 
-    items.add(DropdownMenuItem(
+    productos.add(DropdownMenuItem(
+      child: Text('Silla'),
+      value: Producto(id: 3, nombre: 'Silla', precio: 5600, categoria: 2),
+    ));
+
+    productos.add(DropdownMenuItem(
       child: Text('Mesa 1.6'),
-      value: 3,
+      value: Producto(
+          id: 4, nombre: 'Mesa 1.6m', precio: 55000, categoria: 3, tipo: 1),
     ));
-    items.add(DropdownMenuItem(
+    productos.add(DropdownMenuItem(
       child: Text('Mesa 1.8'),
-      value: 4,
+      value: Producto(
+          id: 5, nombre: 'Mesa 1.8m', precio: 63000, categoria: 3, tipo: 1),
     ));
-    items.add(DropdownMenuItem(
+    productos.add(DropdownMenuItem(
       child: Text('Puff'),
-      value: 5,
+      value: Producto(id: 6, nombre: 'Puff', precio: 8000, categoria: 3),
+    ));
+
+    patas.add(DropdownMenuItem(
+      child: Text('Wengue'),
+      value: 1,
+    ));
+
+    patas.add(DropdownMenuItem(
+      child: Text('Paraiso'),
+      value: 2,
     ));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    opcionesSillon = [_reesplado(), _almohadones(), _patas(), _comentario()];
     return Scaffold(
       appBar: appBarMoovle(texto: 'Nueva venta', context: context),
       body: ListView(
           // padding: EdgeInsets.all(4),
           children: <Widget>[
-            _buscadorProducto(),
+            _buscadorProducto(productos),
             _opcionesSegunCategoria(),
-            _botones()
+            _botones(context),
+            SizedBox(
+              height: 20,
+            ),
           ]),
     );
   }
 
-  Widget _buscadorProducto() {
+  Widget _buscadorProducto(List<DropdownMenuItem<Producto>> items) {
     return SearchableDropdown.single(
       items: items,
       value: selectedValue,
@@ -74,7 +102,9 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
       searchHint: "Busca un producto",
       onChanged: (value) {
         setState(() {
-          selectedValue = value;
+          selectedValue = value.id;
+          categoria = value.categoria;
+          tipo = value.tipo;
         });
       },
       isExpanded: true,
@@ -84,27 +114,48 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
   }
 
   Widget _opcionesSegunCategoria() {
-    final categoria = 1; //sillones
-
     Widget opciones;
+    botonesBottom = true;
+    clearControllers();
+
     switch (categoria) {
       case 1:
         opciones = _opcionesSillon();
         break;
+      case 2:
+        opciones = _opcionesSilla();
+        break;
+      case 3:
+        opciones = _opcionesMesa(tipo);
+        break;
       default:
+        {
+          opciones = Container();
+          botonesBottom = false;
+        }
     }
     return opciones;
   }
 
+  void clearControllers() {
+    this._cantDivisionesAlmohadonesController.text = '';
+    this._cantDivisionesReespladoController.text = '';
+    this._cantSillasController.text = '';
+    this._comentarioController.text = '';
+  }
+
   Widget _opcionesSillon() {
-    return Column(
-      children: opcionesSillon,
-    );
+    return Column(children: [
+      _reesplado(),
+      _almohadones(),
+      _patas(),
+      _comentario(context)
+    ]);
   }
 
   Widget _reesplado() {
     return _cardField('Reespaldo', null, [
-      _cantidadDivisiones(),
+      _cantidad(_cantDivisionesReespladoController, 'Reespaldo'),
       SizedBox(
         height: 10,
       ),
@@ -132,8 +183,10 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
   }
 
   Widget _almohadones() {
-    return _cardField(
-        'Almohadones', null, [_cantidadDivisiones(), _esAlmohadonesEstirado()]);
+    return _cardField('Almohadones', null, [
+      _cantidad(_cantDivisionesAlmohadonesController, 'Almohadones'),
+      _esAlmohadonesEstirado()
+    ]);
   }
 
   Widget _patas() {
@@ -145,24 +198,24 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
     ]);
   }
 
-  Widget _comentario() {
+  Widget _comentario(BuildContext c) {
     return _cardField('Comentario', null, [
-      _textComentario(),
+      _textComentario(c),
       SizedBox(
         height: 20,
       )
     ]);
   }
 
-  Widget _cantidadDivisiones() {
+  Widget _cantidad(TextEditingController controller, String label) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: TextField(
-        controller: _cantDivisionesController,
+        controller: controller,
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          labelText: 'Divisiones',
+          labelText: label,
         ),
       ),
     );
@@ -199,18 +252,20 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
   }
 
   Widget _tiposDePatas() {
-    return _buscadorProducto();
+    return Container();
+    return _buscadorProducto(patas);
   }
 
-  Widget _textComentario() {
+  Widget _textComentario(BuildContext c) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.04),
       child: TextField(
         controller: _comentarioController,
         keyboardType: TextInputType.text,
+        maxLines: 4,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          labelText: 'Comentario',
         ),
       ),
     );
@@ -264,31 +319,81 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
     );
   }
 
-  Widget _botones() {
-    return Row(
-      children: [
-        SizedBox(
-          width: 40,
-        ),
-        _botonCancelar(),
-        Expanded(child: SizedBox()),
-        _botonAceptar(),
-        SizedBox(
-          width: 40,
-        ),
-      ],
-    );
+  Widget _botones(BuildContext context) {
+    return botonesBottom == true
+        ? Row(
+            children: [
+              SizedBox(
+                width: 40,
+              ),
+              _botonCancelar(context),
+              Expanded(child: SizedBox()),
+              _botonAceptar(),
+              SizedBox(
+                width: 40,
+              ),
+            ],
+          )
+        : Container();
   }
 
-  Widget _botonCancelar() {
+  Widget _botonCancelar(BuildContext context) {
     return ElevatedButton.icon(
-        onPressed: () {},
-        icon: Icon(Icons.cancel_sharp),
-        label: Text('Cancelar'));
+      onPressed: () {
+        Navigator.pop(context);
+        clearControllers();
+      },
+      icon: Icon(Icons.cancel_sharp),
+      label: Text('Cancelar'),
+    );
   }
 
   Widget _botonAceptar() {
     return ElevatedButton.icon(
         onPressed: () {}, icon: Icon(Icons.send), label: Text('Aceptar'));
+  }
+
+  Widget _opcionesSilla() {
+    return Column(
+        children: [_cantidadCard(), _tela(), _patas(), _comentario(context)]);
+  }
+
+  Widget _cantidadCard() {
+    return _cardField('Cantidad', null, [
+      _cantidad(_cantSillasController, 'Cantidad'),
+      SizedBox(
+        height: 10,
+      ),
+    ]);
+  }
+
+  Widget _tela() {
+    return Container();
+  }
+
+  Widget _opcionesMesa(int tipo) {
+    switch (tipo) {
+      case 1:
+        return Column(children: [
+          _tapaMesa(),
+          _patasMesa(),
+        ]);
+        break;
+      default:
+    }
+    return Column(
+        children: [_cantidadCard(), _tela(), _patas(), _comentario(context)]);
+  }
+
+  Widget _cantidadSillas(TextEditingController controller) {
+    return TextFormField();
+  }
+
+  Widget _tapaMesa() {
+    return Container();
+  }
+
+  Widget _patasMesa() {
+    return Container();
   }
 }
