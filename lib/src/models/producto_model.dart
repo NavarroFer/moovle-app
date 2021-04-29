@@ -9,6 +9,6 @@ class Producto {
 
   @override
   String toString() {
-    return '${nombre} ${id}';
+    return '$nombre $id';
   }
 }

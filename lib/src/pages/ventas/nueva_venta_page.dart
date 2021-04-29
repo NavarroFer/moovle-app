@@ -1,6 +1,7 @@
 // import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:moovle/src/models/patas_model.dart';
 import 'package:moovle/src/models/producto_model.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
@@ -17,7 +18,8 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
   // final _openDropDownProgKey = GlobalKey<DropdownSearchState<String>>();
   final List<DropdownMenuItem<Producto>> productos = [];
   final List<DropdownMenuItem> patas = [];
-  int selectedValue;
+  int selectedValueProducto;
+  int selectedValuePatas;
   TextStyle styleLabels = TextStyle(fontSize: 15);
   TextStyle styleTituloCard =
       TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
@@ -25,13 +27,16 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
   final _cantDivisionesReespladoController = TextEditingController();
   final _cantDivisionesAlmohadonesController = TextEditingController();
   final _comentarioController = TextEditingController();
-  final _cantSillasController = TextEditingController();
+  final _cantSillasController = TextEditingController(text: '0');
   bool esEstiradoReespaldo = false;
   bool esEstiradoAlmohadones = false;
   bool cambiarPatas = false;
   bool botonesBottom;
+  bool _clearTextEdit = false;
   int categoria;
   int tipo;
+  double _sizePatas = 0;
+  var currentFocus;
   @override
   void initState() {
     productos.add(DropdownMenuItem(
@@ -67,12 +72,12 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
 
     patas.add(DropdownMenuItem(
       child: Text('Wengue'),
-      value: 1,
+      value: Patas(id: 1, nombre: 'Wengue'),
     ));
 
     patas.add(DropdownMenuItem(
       child: Text('Paraiso'),
-      value: 2,
+      value: Patas(id: 2, nombre: 'Paraiso'),
     ));
     super.initState();
   }
@@ -85,7 +90,7 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
           // padding: EdgeInsets.all(4),
           children: <Widget>[
             _buscadorProducto(productos),
-            _opcionesSegunCategoria(),
+            _opcionesSegunCategoria(context),
             _botones(context),
             SizedBox(
               height: 20,
@@ -94,15 +99,30 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
     );
   }
 
+  unfocus() {
+    currentFocus = FocusScope.of(context);
+
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+  }
+
   Widget _buscadorProducto(List<DropdownMenuItem<Producto>> items) {
     return SearchableDropdown.single(
       items: items,
-      value: selectedValue,
+      value: selectedValueProducto,
       hint: "Selecciona un producto",
       searchHint: "Busca un producto",
       onChanged: (value) {
         setState(() {
-          selectedValue = value.id;
+          _clearTextEdit = selectedValueProducto != value.id;
+
+          if (_clearTextEdit) {
+            clearControllers();
+            unfocus();
+          }
+
+          selectedValueProducto = value.id;
           categoria = value.categoria;
           tipo = value.tipo;
         });
@@ -113,20 +133,22 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
     );
   }
 
-  Widget _opcionesSegunCategoria() {
+  Widget _opcionesSegunCategoria(BuildContext context) {
     Widget opciones;
     botonesBottom = true;
-    clearControllers();
 
     switch (categoria) {
+      case 0:
+        opciones = _opcionesOtro(context);
+        break;
       case 1:
-        opciones = _opcionesSillon();
+        opciones = _opcionesSillon(context);
         break;
       case 2:
-        opciones = _opcionesSilla();
+        opciones = _opcionesSilla(context);
         break;
       case 3:
-        opciones = _opcionesMesa(tipo);
+        opciones = _opcionesMesa(tipo, context);
         break;
       default:
         {
@@ -144,27 +166,33 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
     this._comentarioController.text = '';
   }
 
-  Widget _opcionesSillon() {
+  Widget _opcionesSillon(BuildContext context) {
     return Column(children: [
-      _reesplado(),
-      _almohadones(),
-      _patas(),
+      _reesplado(context),
+      _almohadones(context),
+      _patas(context),
       _comentario(context)
     ]);
   }
 
-  Widget _reesplado() {
-    return _cardField('Reespaldo', null, [
-      _cantidad(_cantDivisionesReespladoController, 'Reespaldo'),
-      SizedBox(
-        height: 10,
-      ),
-      _esReespaldoEstirado(),
-    ]);
+  Widget _reesplado(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return _cardField(
+        'Reespaldo',
+        null,
+        [
+          _cantidad(_cantDivisionesReespladoController, 'Reespaldo'),
+          SizedBox(
+            height: size.height * 0.01,
+          ),
+          _esReespaldoEstirado(context),
+        ],
+        context);
   }
 
-  Widget _cardField(
-      String tituloCard, Widget switchHabilitado, List<Widget> listaFields) {
+  Widget _cardField(String tituloCard, Widget switchHabilitado,
+      List<Widget> listaFields, BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Card(
       color: Colors.white60,
       margin: EdgeInsets.all(20),
@@ -172,7 +200,7 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
         children: [
           _tituloCard(tituloCard, switchHabilitado),
           SizedBox(
-            height: 20,
+            height: size.height * 0.01,
           ),
           Column(
             children: listaFields,
@@ -182,35 +210,60 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
     );
   }
 
-  Widget _almohadones() {
-    return _cardField('Almohadones', null, [
-      _cantidad(_cantDivisionesAlmohadonesController, 'Almohadones'),
-      _esAlmohadonesEstirado()
-    ]);
+  Widget _almohadones(BuildContext context) {
+    return _cardField(
+        'Almohadones',
+        null,
+        [
+          _cantidad(_cantDivisionesAlmohadonesController, 'Almohadones'),
+          _esAlmohadonesEstirado(context)
+        ],
+        context);
   }
 
-  Widget _patas() {
-    return _cardField('Patas', null, [
-      _tiposDePatas(),
-      SizedBox(
-        height: 20,
-      )
-    ]);
+  Widget _patas(BuildContext c) {
+    final size = MediaQuery.of(c).size;
+    return _cardField(
+        'Patas',
+        _cambiarPatasSwitch(c),
+        [
+          AnimatedContainer(
+            height: _sizePatas,
+            duration: Duration(milliseconds: 200),
+            child: FutureBuilder(
+                future: Future.delayed(Duration(milliseconds: 195)),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done)
+                    return _tiposDePatas();
+                  else
+                    return Container(); // Return empty container to avoid build errors
+                }),
+          ),
+          SizedBox(
+            height: size.height * 0.01,
+          )
+        ],
+        context);
   }
 
   Widget _comentario(BuildContext c) {
-    return _cardField('Comentario', null, [
-      _textComentario(c),
-      SizedBox(
-        height: 20,
-      )
-    ]);
+    final size = MediaQuery.of(c).size;
+    return _cardField(
+        'Comentario',
+        null,
+        [
+          _textComentario(c),
+          SizedBox(
+            height: size.height * 0.02,
+          ),
+        ],
+        context);
   }
 
   Widget _cantidad(TextEditingController controller, String label) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
@@ -232,18 +285,24 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
                 tituloCard,
                 style: styleTituloCard,
               ),
+              Expanded(
+                child: SizedBox(),
+              ),
+              switchHabilitado != null ? switchHabilitado : Container(),
             ],
           )),
     );
   }
 
-  Widget _cambiarPatasSwitch() {
+  Widget _cambiarPatasSwitch(BuildContext c) {
     // return Icon(Icons.account_circle_sharp);
+    final size = MediaQuery.of(context).size;
     return Switch(
       value: cambiarPatas,
       onChanged: (value) {
         setState(() {
           cambiarPatas = value;
+          _sizePatas = _sizePatas == 0 ? size.height * 0.09 : 0;
         });
       },
       activeTrackColor: Colors.yellow[600],
@@ -252,14 +311,14 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
   }
 
   Widget _tiposDePatas() {
-    return Container();
-    return _buscadorProducto(patas);
+    // return Container();
+    return _buscadorPatas(patas);
   }
 
   Widget _textComentario(BuildContext c) {
+    final size = MediaQuery.of(c).size;
     return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.04),
+      padding: EdgeInsets.symmetric(horizontal: size.width * 0.04),
       child: TextField(
         controller: _comentarioController,
         keyboardType: TextInputType.text,
@@ -271,10 +330,13 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
     );
   }
 
-  Widget _esReespaldoEstirado() {
+  Widget _esReespaldoEstirado(BuildContext c) {
+    final size = MediaQuery.of(c).size;
     return Row(
       children: [
-        SizedBox(width: 20),
+        SizedBox(
+          width: size.width * 0.04,
+        ),
         Text(
           'Estirado',
           style: styleLabels,
@@ -290,15 +352,20 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
           activeTrackColor: Colors.yellow[600],
           activeColor: Colors.yellow[100],
         ),
-        SizedBox(width: 20),
+        SizedBox(
+          width: size.width * 0.04,
+        ),
       ],
     );
   }
 
-  Widget _esAlmohadonesEstirado() {
+  Widget _esAlmohadonesEstirado(BuildContext c) {
+    final size = MediaQuery.of(context).size;
     return Row(
       children: [
-        SizedBox(width: 20),
+        SizedBox(
+          width: size.width * 0.04,
+        ),
         Text(
           'Estirado',
           style: styleLabels,
@@ -314,64 +381,102 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
           activeTrackColor: Colors.yellow[600],
           activeColor: Colors.yellow[100],
         ),
-        SizedBox(width: 20),
+        SizedBox(
+          width: size.width * 0.04,
+        ),
       ],
     );
   }
 
   Widget _botones(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return botonesBottom == true
         ? Row(
             children: [
               SizedBox(
-                width: 40,
+                width: size.width * 0.1,
               ),
               _botonCancelar(context),
               Expanded(child: SizedBox()),
-              _botonAceptar(),
+              _botonAceptar(context),
               SizedBox(
-                width: 40,
+                width: size.width * 0.1,
               ),
             ],
           )
         : Container();
   }
 
+  Widget botonOpciones(BuildContext context,
+      {String title,
+      Icon icon,
+      var color,
+      double factor_alto = 0.07,
+      double factor_ancho = 0.35,
+      void onPressed()}) {
+    final size = MediaQuery.of(context).size;
+    return Container(
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: icon,
+        label: Text(title),
+        style: ElevatedButton.styleFrom(primary: color, elevation: 7),
+      ),
+      height: size.height * factor_alto,
+      width: size.width * factor_ancho,
+    );
+  }
+
   Widget _botonCancelar(BuildContext context) {
-    return ElevatedButton.icon(
+    return botonOpciones(
+      context,
       onPressed: () {
         Navigator.pop(context);
         clearControllers();
       },
       icon: Icon(Icons.cancel_sharp),
-      label: Text('Cancelar'),
+      title: 'Cancelar',
+      color: Colors.red,
     );
   }
 
-  Widget _botonAceptar() {
-    return ElevatedButton.icon(
-        onPressed: () {}, icon: Icon(Icons.send), label: Text('Aceptar'));
+  Widget _botonAceptar(BuildContext context) {
+    return botonOpciones(
+      context,
+      onPressed: () {},
+      icon: Icon(Icons.send),
+      title: 'Aceptar',
+      color: Colors.green,
+    );
   }
 
-  Widget _opcionesSilla() {
-    return Column(
-        children: [_cantidadCard(), _tela(), _patas(), _comentario(context)]);
-  }
-
-  Widget _cantidadCard() {
-    return _cardField('Cantidad', null, [
-      _cantidad(_cantSillasController, 'Cantidad'),
-      SizedBox(
-        height: 10,
-      ),
+  Widget _opcionesSilla(BuildContext context) {
+    return Column(children: [
+      _cantidadCard(context),
+      _tela(),
+      _patas(context),
+      _comentario(context)
     ]);
+  }
+
+  Widget _cantidadCard(BuildContext context) {
+    return _cardField(
+        'Cantidad',
+        null,
+        [
+          _cantidad(_cantSillasController, 'Cantidad'),
+          SizedBox(
+            height: 10,
+          ),
+        ],
+        context);
   }
 
   Widget _tela() {
     return Container();
   }
 
-  Widget _opcionesMesa(int tipo) {
+  Widget _opcionesMesa(int tipo, BuildContext context) {
     switch (tipo) {
       case 1:
         return Column(children: [
@@ -381,8 +486,12 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
         break;
       default:
     }
-    return Column(
-        children: [_cantidadCard(), _tela(), _patas(), _comentario(context)]);
+    return Column(children: [
+      _cantidadCard(context),
+      _tela(),
+      _patas(context),
+      _comentario(context)
+    ]);
   }
 
   Widget _cantidadSillas(TextEditingController controller) {
@@ -395,5 +504,26 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
 
   Widget _patasMesa() {
     return Container();
+  }
+
+  Widget _opcionesOtro(BuildContext context) {
+    return Column(children: [_cantidadCard(context)]);
+  }
+
+  Widget _buscadorPatas(List<DropdownMenuItem> patas) {
+    return SearchableDropdown.single(
+      items: patas,
+      value: selectedValuePatas,
+      hint: "Selecciona un producto",
+      searchHint: "Busca un producto",
+      onChanged: (value) {
+        setState(() {
+          selectedValuePatas = value.id;
+        });
+      },
+      isExpanded: true,
+      iconSize: 40,
+      displayClearIcon: true,
+    );
   }
 }
