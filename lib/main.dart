@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:moovle/src/pages/home_page.dart';
 import 'package:moovle/src/pages/productos/productos_home_page.dart';
+import 'package:moovle/src/pages/ventas/add_product_page.dart';
 import 'package:moovle/src/pages/ventas/envios_page.dart';
-import 'package:moovle/src/pages/ventas/nueva_venta_page.dart';
+import 'package:moovle/src/pages/ventas/nueva_venta.dart';
 import 'package:moovle/src/pages/ventas/ventas_home_page.dart';
+import 'package:moovle/src/widgets/base_widgets.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,6 +16,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: (context, child) {
+        return ScrollConfiguration(
+          behavior: MyBehavior(),
+          child: child,
+        );
+      },
       title: 'Moovle',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -24,8 +32,9 @@ class MyApp extends StatelessWidget {
         HomePage.route: (context) => HomePage(),
         VentasHomePage.route: (context) => VentasHomePage(),
         ProductosHomePage.route: (context) => ProductosHomePage(),
-        NuevaVentaPage.route: (context) => NuevaVentaPage(),
+        AddProductPage.route: (context) => AddProductPage(),
         EnviosPage.route: (context) => EnviosPage(),
+        NuevaVentaPage.route: (context) => NuevaVentaPage(),
       },
       home: HomePage(),
     );

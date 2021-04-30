@@ -6,14 +6,14 @@ import 'package:moovle/src/models/producto_model.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 
-class NuevaVentaPage extends StatefulWidget {
-  static final String route = 'nuevaVenta';
+class AddProductPage extends StatefulWidget {
+  static final String route = 'addProduct';
 
   @override
-  _NuevaVentaPageState createState() => _NuevaVentaPageState();
+  _AddProductPageState createState() => _AddProductPageState();
 }
 
-class _NuevaVentaPageState extends State<NuevaVentaPage> {
+class _AddProductPageState extends State<AddProductPage> {
   // final _formKey = GlobalKey<FormState>();
   // final _openDropDownProgKey = GlobalKey<DropdownSearchState<String>>();
   final List<DropdownMenuItem<Producto>> productos = [];
@@ -177,7 +177,7 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
 
   Widget _reesplado(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return _cardField(
+    return cardField(
         'Reespaldo',
         null,
         [
@@ -190,28 +190,8 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
         context);
   }
 
-  Widget _cardField(String tituloCard, Widget switchHabilitado,
-      List<Widget> listaFields, BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return Card(
-      color: Colors.white60,
-      margin: EdgeInsets.all(20),
-      child: Column(
-        children: [
-          _tituloCard(tituloCard, switchHabilitado),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          Column(
-            children: listaFields,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _almohadones(BuildContext context) {
-    return _cardField(
+    return cardField(
         'Almohadones',
         null,
         [
@@ -223,7 +203,7 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
 
   Widget _patas(BuildContext c) {
     final size = MediaQuery.of(c).size;
-    return _cardField(
+    return cardField(
         'Patas',
         _cambiarPatasSwitch(c),
         [
@@ -231,7 +211,7 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
             height: _sizePatas,
             duration: Duration(milliseconds: 200),
             child: FutureBuilder(
-                future: Future.delayed(Duration(milliseconds: 195)),
+                future: Future.delayed(Duration(milliseconds: 200)),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done)
                     return _tiposDePatas();
@@ -248,7 +228,7 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
 
   Widget _comentario(BuildContext c) {
     final size = MediaQuery.of(c).size;
-    return _cardField(
+    return cardField(
         'Comentario',
         null,
         [
@@ -271,26 +251,6 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
           labelText: label,
         ),
       ),
-    );
-  }
-
-  Widget _tituloCard(String tituloCard, Widget switchHabilitado) {
-    return Padding(
-      padding: EdgeInsets.only(left: 20, top: 20),
-      child: Align(
-          alignment: Alignment.centerLeft,
-          child: Row(
-            children: [
-              Text(
-                tituloCard,
-                style: styleTituloCard,
-              ),
-              Expanded(
-                child: SizedBox(),
-              ),
-              switchHabilitado != null ? switchHabilitado : Container(),
-            ],
-          )),
     );
   }
 
@@ -407,26 +367,6 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
         : Container();
   }
 
-  Widget botonOpciones(BuildContext context,
-      {String title,
-      Icon icon,
-      var color,
-      double factor_alto = 0.07,
-      double factor_ancho = 0.35,
-      void onPressed()}) {
-    final size = MediaQuery.of(context).size;
-    return Container(
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: icon,
-        label: Text(title),
-        style: ElevatedButton.styleFrom(primary: color, elevation: 7),
-      ),
-      height: size.height * factor_alto,
-      width: size.width * factor_ancho,
-    );
-  }
-
   Widget _botonCancelar(BuildContext context) {
     return botonOpciones(
       context,
@@ -443,7 +383,16 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
   Widget _botonAceptar(BuildContext context) {
     return botonOpciones(
       context,
-      onPressed: () {},
+      onPressed: () {
+        final producto = productos
+            .firstWhere((element) => element.value.id == selectedValueProducto)
+            .value;
+        var cantidad = 1;
+
+        if (_cantSillasController.text != '')
+          cantidad = int.parse(_cantSillasController.text);
+        Navigator.pop(context, [producto, cantidad]);
+      },
       icon: Icon(Icons.send),
       title: 'Aceptar',
       color: Colors.green,
@@ -460,7 +409,7 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
   }
 
   Widget _cantidadCard(BuildContext context) {
-    return _cardField(
+    return cardField(
         'Cantidad',
         null,
         [
@@ -517,6 +466,7 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
       hint: "Selecciona un producto",
       searchHint: "Busca un producto",
       onChanged: (value) {
+        var a = 2;
         setState(() {
           selectedValuePatas = value.id;
         });

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 Widget appBarMoovle(
     {String texto = 'Moovle',
     Color color = Colors.yellow,
-    List acciones,
+    List<Widget> acciones,
     BuildContext context}) {
   final size = MediaQuery.of(context).size;
   return AppBar(
@@ -14,6 +14,26 @@ Widget appBarMoovle(
         style: TextStyle(color: Colors.black, fontSize: size.width * 0.08)),
     backgroundColor: color,
     actions: acciones,
+  );
+}
+
+Widget botonOpciones(BuildContext context,
+    {String title,
+    Icon icon,
+    var color,
+    double factor_alto = 0.07,
+    double factor_ancho = 0.35,
+    void onPressed()}) {
+  final size = MediaQuery.of(context).size;
+  return Container(
+    child: ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: icon,
+      label: Text(title),
+      style: ElevatedButton.styleFrom(primary: color, elevation: 7),
+    ),
+    height: size.height * factor_alto,
+    width: size.width * factor_ancho,
   );
 }
 
@@ -40,4 +60,51 @@ Widget botonPush(
           ),
         )),
   );
+}
+
+Widget cardField(String tituloCard, Widget switchHabilitado,
+    List<Widget> listaFields, BuildContext context) {
+  final styleTituloCard = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+  final titulo = Padding(
+    padding: EdgeInsets.only(left: 20, top: 20),
+    child: Align(
+        alignment: Alignment.centerLeft,
+        child: Row(
+          children: [
+            Text(
+              tituloCard,
+              style: styleTituloCard,
+            ),
+            Expanded(
+              child: SizedBox(),
+            ),
+            switchHabilitado != null ? switchHabilitado : Container(),
+          ],
+        )),
+  );
+
+  final size = MediaQuery.of(context).size;
+  return Card(
+    color: Colors.white60,
+    margin: EdgeInsets.all(20),
+    child: Column(
+      children: [
+        titulo,
+        SizedBox(
+          height: size.height * 0.01,
+        ),
+        Column(
+          children: listaFields,
+        ),
+      ],
+    ),
+  );
+}
+
+class MyBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
 }
