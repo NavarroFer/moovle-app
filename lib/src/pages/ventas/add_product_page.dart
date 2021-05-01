@@ -1,8 +1,9 @@
-// import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:moovle/src/models/color_tela_model.dart';
 import 'package:moovle/src/models/patas_model.dart';
 import 'package:moovle/src/models/producto_model.dart';
+import 'package:moovle/src/models/tela_model.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 
@@ -17,9 +18,14 @@ class _AddProductPageState extends State<AddProductPage> {
   // final _formKey = GlobalKey<FormState>();
   // final _openDropDownProgKey = GlobalKey<DropdownSearchState<String>>();
   final List<DropdownMenuItem<Producto>> productos = [];
-  final List<DropdownMenuItem> patas = [];
+  final List<DropdownMenuItem<Patas>> patas = [];
+  final List<DropdownMenuItem<Tela>> telas = [];
+  final List<DropdownMenuItem<ColorTela>> coloresTela = [];
+  List<DropdownMenuItem<ColorTela>> coloresSegunTela = [];
   int selectedValueProducto;
   int selectedValuePatas;
+  int selectedValueTela;
+  int selectedValueColor;
   TextStyle styleLabels = TextStyle(fontSize: 15);
   TextStyle styleTituloCard =
       TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
@@ -39,6 +45,7 @@ class _AddProductPageState extends State<AddProductPage> {
   var currentFocus;
   @override
   void initState() {
+    super.initState();
     productos.add(DropdownMenuItem(
       child: Text('Sillon 1.6'),
       value:
@@ -79,7 +86,61 @@ class _AddProductPageState extends State<AddProductPage> {
       child: Text('Paraiso'),
       value: Patas(id: 2, nombre: 'Paraiso'),
     ));
-    super.initState();
+
+    telas.add(DropdownMenuItem(
+      child: Text('Mica'),
+      value: Tela(id: 1, nombre: 'Mica'),
+    ));
+
+    coloresTela.add(DropdownMenuItem(
+      child: Text('Gris'),
+      value: ColorTela(id: 1, nombre: 'Gris', tipo: 1),
+    ));
+
+    coloresTela.add(DropdownMenuItem(
+      child: Text('Negro'),
+      value: ColorTela(id: 2, nombre: 'Negro', tipo: 1),
+    ));
+
+    coloresTela.add(DropdownMenuItem(
+      child: Text('Blanco'),
+      value: ColorTela(id: 3, nombre: 'Blanco', tipo: 1),
+    ));
+
+    coloresTela.add(DropdownMenuItem(
+      child: Text('Rojo'),
+      value: ColorTela(id: 4, nombre: 'Rojo', tipo: 1),
+    ));
+
+    telas.add(DropdownMenuItem(
+      child: Text('Tela 1'),
+      value: Tela(id: 2, nombre: 'Tela 1'),
+    ));
+
+    coloresTela.add(DropdownMenuItem(
+      child: Text('Gris'),
+      value: ColorTela(id: 5, nombre: 'Gris', tipo: 2),
+    ));
+
+    coloresTela.add(DropdownMenuItem(
+      child: Text('Azul'),
+      value: ColorTela(id: 6, nombre: 'Azul', tipo: 2),
+    ));
+
+    telas.add(DropdownMenuItem(
+      child: Text('Tela 2'),
+      value: Tela(id: 3, nombre: 'Tela 2'),
+    ));
+
+    // coloresTela.add(DropdownMenuItem(
+    //   child: Text('Naranja'),
+    //   value: ColorTela(id: 7, nombre: 'Naranja', tipo: 3),
+    // ));
+
+    // coloresTela.add(DropdownMenuItem(
+    //   child: Text('Celeste'),
+    //   value: ColorTela(id: 8, nombre: 'Celeste', tipo: 3),
+    // ));
   }
 
   @override
@@ -115,7 +176,10 @@ class _AddProductPageState extends State<AddProductPage> {
       searchHint: "Busca un producto",
       onChanged: (value) {
         setState(() {
-          _clearTextEdit = selectedValueProducto != value.id;
+          if (value == null)
+            _clearTextEdit = false;
+          else
+            _clearTextEdit = selectedValueProducto != value.id;
 
           if (_clearTextEdit) {
             clearControllers();
@@ -136,16 +200,16 @@ class _AddProductPageState extends State<AddProductPage> {
   Widget _opcionesSegunCategoria(BuildContext context) {
     Widget opciones;
     botonesBottom = true;
-
+    // List<DropdownMenuItem<Tela>> telas;
     switch (categoria) {
       case 0:
         opciones = _opcionesOtro(context);
         break;
       case 1:
-        opciones = _opcionesSillon(context);
+        opciones = _opcionesSillon(context, telas);
         break;
       case 2:
-        opciones = _opcionesSilla(context);
+        opciones = _opcionesSilla(context, telas);
         break;
       case 3:
         opciones = _opcionesMesa(tipo, context);
@@ -166,10 +230,12 @@ class _AddProductPageState extends State<AddProductPage> {
     this._comentarioController.text = '';
   }
 
-  Widget _opcionesSillon(BuildContext context) {
+  Widget _opcionesSillon(
+      BuildContext context, List<DropdownMenuItem<Tela>> telas) {
     return Column(children: [
       _reesplado(context),
       _almohadones(context),
+      _tela(context, telas),
       _patas(context),
       _comentario(context)
     ]);
@@ -207,17 +273,9 @@ class _AddProductPageState extends State<AddProductPage> {
         'Patas',
         _cambiarPatasSwitch(c),
         [
-          AnimatedContainer(
+          Container(
             height: _sizePatas,
-            duration: Duration(milliseconds: 200),
-            child: FutureBuilder(
-                future: Future.delayed(Duration(milliseconds: 200)),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done)
-                    return _tiposDePatas();
-                  else
-                    return Container(); // Return empty container to avoid build errors
-                }),
+            child: _tiposDePatas(),
           ),
           SizedBox(
             height: size.height * 0.01,
@@ -262,7 +320,7 @@ class _AddProductPageState extends State<AddProductPage> {
       onChanged: (value) {
         setState(() {
           cambiarPatas = value;
-          _sizePatas = _sizePatas == 0 ? size.height * 0.09 : 0;
+          _sizePatas = _sizePatas == 0 ? size.height * 0.12 : 0;
         });
       },
       activeTrackColor: Colors.yellow[600],
@@ -399,10 +457,11 @@ class _AddProductPageState extends State<AddProductPage> {
     );
   }
 
-  Widget _opcionesSilla(BuildContext context) {
+  Widget _opcionesSilla(
+      BuildContext context, List<DropdownMenuItem<Tela>> telas) {
     return Column(children: [
       _cantidadCard(context),
-      _tela(),
+      _tela(context, telas),
       _patas(context),
       _comentario(context)
     ]);
@@ -421,8 +480,23 @@ class _AddProductPageState extends State<AddProductPage> {
         context);
   }
 
-  Widget _tela() {
-    return Container();
+  Widget _tela(BuildContext c, List<DropdownMenuItem<Tela>> telas) {
+    final size = MediaQuery.of(c).size;
+    return cardField(
+        'Tela',
+        null,
+        [
+          Container(
+            child: _buscadorTela(telas),
+          ),
+          SizedBox(
+            height: size.height * 0.01,
+          ),
+          Container(
+            child: _buscadorColorTela(),
+          ),
+        ],
+        context);
   }
 
   Widget _opcionesMesa(int tipo, BuildContext context) {
@@ -437,7 +511,6 @@ class _AddProductPageState extends State<AddProductPage> {
     }
     return Column(children: [
       _cantidadCard(context),
-      _tela(),
       _patas(context),
       _comentario(context)
     ]);
@@ -459,9 +532,10 @@ class _AddProductPageState extends State<AddProductPage> {
     return Column(children: [_cantidadCard(context)]);
   }
 
-  Widget _buscadorPatas(List<DropdownMenuItem> patas) {
+  Widget _buscadorPatas(List<DropdownMenuItem<Patas>> patas) {
     return SearchableDropdown.single(
       items: patas,
+      readOnly: _sizePatas == 0,
       value: selectedValuePatas,
       hint: "Selecciona un producto",
       searchHint: "Busca un producto",
@@ -469,6 +543,51 @@ class _AddProductPageState extends State<AddProductPage> {
         var a = 2;
         setState(() {
           selectedValuePatas = value.id;
+        });
+      },
+      isExpanded: true,
+      iconSize: 40,
+      displayClearIcon: true,
+    );
+  }
+
+  Widget _buscadorTela(List<DropdownMenuItem<Tela>> telas) {
+    return SearchableDropdown.single(
+      items: telas,
+      value: selectedValueTela,
+      hint: "Selecciona una tela",
+      searchHint: "Busca una tela",
+      onChanged: (value) {
+        setState(() {
+          if (value != null) {
+            // if (selectedValueTela != value.id) {
+            //   selectedValueColor = 1s;
+            // }
+            selectedValueTela = value.id;
+
+            coloresSegunTela.clear();
+            coloresTela.forEach((element) {
+              if (element.value.tipo == selectedValueTela)
+                coloresSegunTela.add(element);
+            });
+          }
+        });
+      },
+      isExpanded: true,
+      iconSize: 40,
+      displayClearIcon: true,
+    );
+  }
+
+  Widget _buscadorColorTela() {
+    return SearchableDropdown.single(
+      items: coloresSegunTela,
+      value: selectedValueColor,
+      hint: "Selecciona un color",
+      searchHint: "Busca un color",
+      onChanged: (value) {
+        setState(() {
+          selectedValueColor = value?.id;
         });
       },
       isExpanded: true,

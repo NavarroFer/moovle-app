@@ -164,7 +164,7 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: TextFormField(
         controller: controller,
-        keyboardType: TextInputType.number,
+        keyboardType: TextInputType.name,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: label,
