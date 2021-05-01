@@ -11,8 +11,6 @@ _Tecnologias:_
 
 ## Autores ✒️
 
-_Menciona a todos aquellos que ayudaron a levantar el proyecto desde sus inicios_
-
 * **Fernando Navarro** - *Desarrollador* - [NavarroFer](https://github.com/NavarroFer)
 
 ## Licencia 📄
