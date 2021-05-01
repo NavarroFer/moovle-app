@@ -128,19 +128,19 @@ class _AddProductPageState extends State<AddProductPage> {
     ));
 
     telas.add(DropdownMenuItem(
-      child: Text('Tela 2'),
-      value: Tela(id: 3, nombre: 'Tela 2'),
+      child: Text('Tela 3'),
+      value: Tela(id: 4, nombre: 'Tela 3'),
     ));
 
-    // coloresTela.add(DropdownMenuItem(
-    //   child: Text('Naranja'),
-    //   value: ColorTela(id: 7, nombre: 'Naranja', tipo: 3),
-    // ));
+    coloresTela.add(DropdownMenuItem(
+      child: Text('Gris oscuro'),
+      value: ColorTela(id: 7, nombre: 'Gris', tipo: 4),
+    ));
 
-    // coloresTela.add(DropdownMenuItem(
-    //   child: Text('Celeste'),
-    //   value: ColorTela(id: 8, nombre: 'Celeste', tipo: 3),
-    // ));
+    coloresTela.add(DropdownMenuItem(
+      child: Text('Verde'),
+      value: ColorTela(id: 8, nombre: 'Verde', tipo: 4),
+    ));
   }
 
   @override
@@ -535,12 +535,10 @@ class _AddProductPageState extends State<AddProductPage> {
   Widget _buscadorPatas(List<DropdownMenuItem<Patas>> patas) {
     return SearchableDropdown.single(
       items: patas,
-      readOnly: _sizePatas == 0,
       value: selectedValuePatas,
-      hint: "Selecciona un producto",
-      searchHint: "Busca un producto",
+      hint: "Selecciona unas patas",
+      searchHint: "Buscar patas",
       onChanged: (value) {
-        var a = 2;
         setState(() {
           selectedValuePatas = value.id;
         });

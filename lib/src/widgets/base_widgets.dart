@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 // Este boton se puede utilizar para cualquier situacion  //
@@ -107,4 +108,120 @@ class MyBehavior extends ScrollBehavior {
       BuildContext context, Widget child, AxisDirection axisDirection) {
     return child;
   }
+}
+
+void mostrarSnackbar(String mensaje, BuildContext c) {
+  final snackbar = SnackBar(
+    content: Text(mensaje),
+    duration: Duration(milliseconds: 1500),
+  );
+
+  ScaffoldMessenger.of(c).showSnackBar(snackbar);
+}
+
+Widget botones(BuildContext c, List<Widget> lista) {
+  return Container(
+      height: MediaQuery.of(c).size.height * 0.55,
+      padding:
+          EdgeInsets.symmetric(horizontal: MediaQuery.of(c).size.width * 0.03),
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        itemCount: lista.length,
+        itemBuilder: (context, index) {
+          if (index % 2 == 1) {
+            if (!(lista[index] is Container) &&
+                !(lista[index - 1] is Container)) {
+              return Row(children: [lista[index - 1], lista[index]]);
+            } else {
+              if (!(lista[index] is Container))
+                return Row(children: [lista[index]]);
+              else
+                return Row(children: [lista[index - 1]]);
+            }
+          } else if (index == lista.length - 1) {
+            if (!(lista[index] is Container))
+              return Row(children: [lista[index]]);
+          }
+          return Container();
+        },
+      ));
+}
+
+Widget botonMenu(
+    {BuildContext c,
+    String s,
+    IconData icon,
+    var color1,
+    var color2,
+    void Function(BuildContext c) onPress,
+    bool expanded}) {
+  final size = MediaQuery.of(c).size;
+  return GestureDetector(
+    onTap: () => onPress(c),
+    child: Column(
+      children: [
+        Card(
+          child: Container(
+            child: Stack(
+              children: [
+                _iconBoton(c, icon, expanded),
+                _textBoton(c, s, expanded)
+              ],
+            ),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                color1,
+                color2,
+              ],
+            )),
+            height: size.height * 0.2,
+            width: expanded ? size.width * 0.9 : size.width * 0.45,
+          ),
+        ),
+        expanded
+            ? SizedBox(
+                height: 50,
+              )
+            : Container()
+      ],
+    ),
+  );
+}
+
+Widget _textBoton(BuildContext c, String s, bool expanded) {
+  final size = MediaQuery.of(c).size;
+  return Container(
+    child: Padding(
+      padding: EdgeInsets.only(
+        left: size.width * 0.05,
+        top: size.height * 0.03,
+      ),
+      child: AutoSizeText(
+        s,
+        style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+        textScaleFactor: expanded ? size.width * 0.005 : size.width * 0.004,
+        maxLines: 2,
+        textAlign: TextAlign.start,
+        overflow: TextOverflow.fade,
+      ),
+    ),
+  );
+}
+
+Widget _iconBoton(BuildContext c, IconData icon, bool expanded) {
+  var size = MediaQuery.of(c).size;
+  return Padding(
+    padding: EdgeInsets.only(
+        top: expanded ? size.height * 0.01 : size.height * 0.085,
+        left: expanded ? size.width * 0.5 : size.width * 0.25),
+    child: Icon(
+      icon,
+      color: Color.fromRGBO(255, 255, 255, 0.6),
+      size: expanded ? size.width * 0.3 : size.width * 0.2,
+    ),
+  );
 }

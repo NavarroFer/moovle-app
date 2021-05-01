@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moovle/src/pages/ventas/add_product_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:moovle/src/pages/ventas/envios_page.dart';
 import 'package:moovle/src/pages/ventas/nueva_venta.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
@@ -11,20 +11,43 @@ class VentasHomePage extends StatelessWidget {
     return Scaffold(
         appBar: appBarMoovle(texto: 'Ventas', context: context),
         body: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: _botonesVentas(context),
-        )));
+          child: _botonesMenu(context),
+        ));
   }
 
   List<Widget> _botonesVentas(BuildContext context) {
     return [
-      botonPush(
-          text: "Nueva venta", route: NuevaVentaPage.route, context: context),
-      SizedBox(
-        height: MediaQuery.of(context).size.height * 0.1,
-      ),
-      botonPush(text: "Envios", route: EnviosPage.route, context: context),
+      botonMenu(
+          c: context,
+          s: 'Nueva venta',
+          icon: CupertinoIcons.cart_fill_badge_plus,
+          color1: Colors.red[200],
+          color2: Colors.red,
+          expanded: true,
+          onPress: onPressNuevaVenta),
+      Container(),
+      botonMenu(
+          c: context,
+          s: 'Envios',
+          icon: Icons.local_shipping_outlined,
+          color1: Colors.cyan[200],
+          color2: Colors.blue,
+          expanded: true,
+          onPress: onPressEnvios),
+      Container(),
     ];
+  }
+
+  void onPressNuevaVenta(BuildContext c) {
+    Navigator.pushNamed(c, NuevaVentaPage.route);
+  }
+
+  void onPressEnvios(BuildContext c) {
+    Navigator.pushNamed(c, EnviosPage.route);
+  }
+
+  Widget _botonesMenu(BuildContext context) {
+    final botonesVentas = _botonesVentas(context);
+    return botones(context, botonesVentas);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:moovle/src/pages/productos/productos_home_page.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
@@ -11,22 +12,46 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: appBarMoovle(context: context),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: _botonesHome(context),
-        ),
+        child: _botonesMenu(context),
       ),
     );
   }
 
   List<Widget> _botonesHome(BuildContext context) {
     return [
-      botonPush(text: "Ventas", route: VentasHomePage.route, context: context),
-      SizedBox(
-        height: MediaQuery.of(context).size.height * 0.1,
-      ),
-      botonPush(
-          text: "Productos", route: ProductosHomePage.route, context: context),
+      botonMenu(
+          c: context,
+          s: 'Ventas',
+          icon: Icons.attach_money_sharp,
+          color1: Colors.orange[200],
+          color2: Colors.orange,
+          expanded: true,
+          onPress: onPressVentas),
+      Container(),
+      botonMenu(
+          c: context,
+          s: 'Productos',
+          icon: CupertinoIcons.list_bullet_below_rectangle,
+          color1: Colors.green[200],
+          color2: Colors.green,
+          expanded: true,
+          onPress: onPressProductos),
+      Container(),
     ];
   }
+
+  void onPressVentas(BuildContext c) {
+    Navigator.pushNamed(c, VentasHomePage.route);
+  }
+
+  void onPressProductos(BuildContext c) {
+    Navigator.pushNamed(c, ProductosHomePage.route);
+  }
+
+  Widget _botonesMenu(BuildContext context) {
+    final botonesVentas = _botonesHome(context);
+    return botones(context, botonesVentas);
+  }
+
+  _botonesVentas(BuildContext context) {}
 }

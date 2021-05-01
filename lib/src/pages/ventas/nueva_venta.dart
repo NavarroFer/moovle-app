@@ -186,6 +186,39 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
   }
 
   List<Widget> _grabaPedido(BuildContext context) {
-    return [ElevatedButton(onPressed: () {}, child: Icon(Icons.send_outlined))];
+    final size = MediaQuery.of(context).size;
+    return [
+      Container(
+          height: 10,
+          width: size.width * 0.2,
+          child: ElevatedButton(
+              style: ElevatedButton.styleFrom(primary: Colors.yellow[700]),
+              onPressed: () {
+                onPressGrabaPedido(context);
+              },
+              child: Icon(Icons.send_outlined)))
+    ];
+  }
+
+  void onPressGrabaPedido(BuildContext context) {
+    _enviaPedido().then((value) {
+      if (value == true) {
+        mostrarSnackbar('Pedido enviado correctamente', context);
+        Navigator.pop(context);
+      } else {
+        mostrarSnackbar('No se ha podido enviar el pedido', context);
+        Navigator.pop(context);
+      }
+    }).onError((error, stackTrace) {
+      mostrarSnackbar('No se ha podido enviar el pedido', context);
+      Navigator.pop(context);
+    });
+  }
+
+  Future<bool> _enviaPedido() async {
+    bool resultado = false;
+    await Future.delayed(Duration(milliseconds: 2000))
+        .then((value) => resultado = true);
+    return resultado;
   }
 }
