@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:moovle/src/pages/home_page.dart';
 import 'package:moovle/src/pages/productos/productos_home_page.dart';
-import 'package:moovle/src/pages/ventas/add_product_page.dart';
-import 'package:moovle/src/pages/ventas/envios_page.dart';
-import 'package:moovle/src/pages/ventas/nueva_venta.dart';
-import 'package:moovle/src/pages/ventas/ventas_home_page.dart';
+import 'package:moovle/src/pages/ventas/envios/envio_detail_page.dart';
+import 'package:moovle/src/pages/ventas/venta/add_product_page.dart';
+import 'package:moovle/src/pages/ventas/envios/envios_page.dart';
+import 'package:moovle/src/pages/ventas/venta/nueva_venta.dart';
+import 'package:moovle/src/pages/ventas/venta/ventas_home_page.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
 
 void main() {
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         AddProductPage.route: (context) => AddProductPage(),
         EnviosPage.route: (context) => EnviosPage(),
         NuevaVentaPage.route: (context) => NuevaVentaPage(),
+        EnvioDetailPage.route: (context) => EnvioDetailPage(),
       },
       home: HomePage(),
     );

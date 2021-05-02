@@ -7,7 +7,7 @@ _App para gestion interna de Moovle, una tienda familiar de muebles ubicada en l
 _Tecnologias:_
 
 * [Flutter](https://flutter.dev/) - Frontend APP
-* [NodeJS](https://nodejs.org/es/) - Backend 
+* [NodeJS](https://nodejs.org/es/) - Backend in [Repo](https://github.com/NavarroFer/moovle-backend)
 
 ## Autores ✒️
 

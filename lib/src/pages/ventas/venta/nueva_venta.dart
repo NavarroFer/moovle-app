@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moovle/src/models/producto_model.dart';
-import 'package:moovle/src/pages/ventas/add_product_page.dart';
+import 'package:moovle/src/pages/ventas/venta/add_product_page.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
 
 class NuevaVentaPage extends StatefulWidget {
@@ -130,8 +130,8 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
     return botonOpciones(context,
         title: '',
         color: Colors.green,
-        // factor_alto: 0.07,
-        factor_ancho: 0.30,
+        // factorAlto: 0.07,
+        factorAncho: 0.30,
         icon: Icon(
           Icons.add_box_outlined,
           size: size.height * 0.07,

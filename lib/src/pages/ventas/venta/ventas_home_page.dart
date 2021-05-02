@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:moovle/src/pages/ventas/envios_page.dart';
-import 'package:moovle/src/pages/ventas/nueva_venta.dart';
+import 'package:moovle/src/pages/ventas/envios/envios_page.dart';
+import 'package:moovle/src/pages/ventas/venta/nueva_venta.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
 
 class VentasHomePage extends StatelessWidget {

@@ -516,10 +516,6 @@ class _AddProductPageState extends State<AddProductPage> {
     ]);
   }
 
-  Widget _cantidadSillas(TextEditingController controller) {
-    return TextFormField();
-  }
-
   Widget _tapaMesa() {
     return Container();
   }

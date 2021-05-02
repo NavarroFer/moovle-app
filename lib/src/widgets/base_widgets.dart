@@ -22,8 +22,8 @@ Widget botonOpciones(BuildContext context,
     {String title,
     Icon icon,
     var color,
-    double factor_alto = 0.07,
-    double factor_ancho = 0.35,
+    double factorAlto = 0.07,
+    double factorAncho = 0.35,
     void onPressed()}) {
   final size = MediaQuery.of(context).size;
   return Container(
@@ -33,8 +33,8 @@ Widget botonOpciones(BuildContext context,
       label: Text(title),
       style: ElevatedButton.styleFrom(primary: color, elevation: 7),
     ),
-    height: size.height * factor_alto,
-    width: size.width * factor_ancho,
+    height: size.height * factorAlto,
+    width: size.width * factorAncho,
   );
 }
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:moovle/src/pages/productos/productos_home_page.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
 
-import 'ventas/ventas_home_page.dart';
+import 'ventas/venta/ventas_home_page.dart';
 
 class HomePage extends StatelessWidget {
   static final String route = 'homePage';
@@ -52,6 +52,4 @@ class HomePage extends StatelessWidget {
     final botonesVentas = _botonesHome(context);
     return botones(context, botonesVentas);
   }
-
-  _botonesVentas(BuildContext context) {}
 }
