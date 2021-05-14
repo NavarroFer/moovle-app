@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:moovle/src/pages/general/feed_page.dart';
 import 'package:moovle/src/pages/productos/productos_home_page.dart';
+import 'package:moovle/src/pages/ventas/envios/envios_page.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
 
 import 'ventas/venta/ventas_home_page.dart';
@@ -37,11 +39,37 @@ class HomePage extends StatelessWidget {
           expanded: true,
           onPress: onPressProductos),
       Container(),
+      botonMenu(
+          c: context,
+          s: 'Envios',
+          icon: Icons.local_shipping_outlined,
+          color1: Colors.cyan[200],
+          color2: Colors.blue,
+          expanded: true,
+          onPress: onPressEnvios),
+      Container(),
+      botonMenu(
+          c: context,
+          s: 'Feed',
+          icon: Icons.list_alt_rounded,
+          color1: Colors.red[200],
+          color2: Colors.red,
+          expanded: true,
+          onPress: onPressFeed),
+      Container(),
     ];
+  }
+
+  void onPressFeed(BuildContext c) {
+    Navigator.pushNamed(c, FeedPage.route);
   }
 
   void onPressVentas(BuildContext c) {
     Navigator.pushNamed(c, VentasHomePage.route);
+  }
+
+  void onPressEnvios(BuildContext c) {
+    Navigator.pushNamed(c, EnviosPage.route);
   }
 
   void onPressProductos(BuildContext c) {
@@ -50,6 +78,6 @@ class HomePage extends StatelessWidget {
 
   Widget _botonesMenu(BuildContext context) {
     final botonesVentas = _botonesHome(context);
-    return botones(context, botonesVentas);
+    return botones(context, botonesVentas, 0.75);
   }
 }

@@ -119,9 +119,9 @@ void mostrarSnackbar(String mensaje, BuildContext c) {
   ScaffoldMessenger.of(c).showSnackBar(snackbar);
 }
 
-Widget botones(BuildContext c, List<Widget> lista) {
+Widget botones(BuildContext c, List<Widget> lista, double height) {
   return Container(
-      height: MediaQuery.of(c).size.height * 0.55,
+      height: MediaQuery.of(c).size.height * height,
       padding:
           EdgeInsets.symmetric(horizontal: MediaQuery.of(c).size.width * 0.03),
       child: ListView.builder(

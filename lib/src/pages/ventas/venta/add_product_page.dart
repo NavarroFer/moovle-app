@@ -4,6 +4,7 @@ import 'package:moovle/src/models/color_tela_model.dart';
 import 'package:moovle/src/models/patas_model.dart';
 import 'package:moovle/src/models/producto_model.dart';
 import 'package:moovle/src/models/tela_model.dart';
+import 'package:moovle/src/models/tipo_venta_model.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 
@@ -19,6 +20,7 @@ class _AddProductPageState extends State<AddProductPage> {
   // final _openDropDownProgKey = GlobalKey<DropdownSearchState<String>>();
   final List<DropdownMenuItem<Producto>> productos = [];
   final List<DropdownMenuItem<Patas>> patas = [];
+  final List<DropdownMenuItem<TipoVenta>> tiposVenta = [];
   final List<DropdownMenuItem<Tela>> telas = [];
   final List<DropdownMenuItem<ColorTela>> coloresTela = [];
   List<DropdownMenuItem<ColorTela>> coloresSegunTela = [];
@@ -26,6 +28,7 @@ class _AddProductPageState extends State<AddProductPage> {
   int selectedValuePatas;
   int selectedValueTela;
   int selectedValueColor;
+  int selectedValueTipoVenta;
   TextStyle styleLabels = TextStyle(fontSize: 15);
   TextStyle styleTituloCard =
       TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
@@ -34,14 +37,17 @@ class _AddProductPageState extends State<AddProductPage> {
   final _cantDivisionesAlmohadonesController = TextEditingController();
   final _comentarioController = TextEditingController();
   final _cantSillasController = TextEditingController(text: '0');
-  bool esEstiradoReespaldo = false;
-  bool esEstiradoAlmohadones = false;
+  final _precioEspecialController = TextEditingController();
+  bool esTiradoReespaldo = false;
+  bool esTiradoAlmohadones = false;
   bool cambiarPatas = false;
+  bool cambiarPrecio = false;
   bool botonesBottom;
   bool _clearTextEdit = false;
   int categoria;
   int tipo;
   double _sizePatas = 0;
+  double _sizePrecio = 0;
   var currentFocus;
   @override
   void initState() {
@@ -141,6 +147,27 @@ class _AddProductPageState extends State<AddProductPage> {
       child: Text('Verde'),
       value: ColorTela(id: 8, nombre: 'Verde', tipo: 4),
     ));
+
+    TipoVenta tipoVentaFabrica = TipoVenta(id: 1, nombre: 'Fabrica');
+
+    tiposVenta.add(DropdownMenuItem(
+      child: Text(tipoVentaFabrica.nombre),
+      value: tipoVentaFabrica,
+    ));
+
+    TipoVenta tipoVentaStock = TipoVenta(id: 2, nombre: 'Stock');
+
+    tiposVenta.add(DropdownMenuItem(
+      child: Text(tipoVentaStock.nombre),
+      value: tipoVentaStock,
+    ));
+
+    TipoVenta tipoVentaNissa = TipoVenta(id: 3, nombre: 'Nissa');
+
+    tiposVenta.add(DropdownMenuItem(
+      child: Text(tipoVentaNissa.nombre),
+      value: tipoVentaNissa,
+    ));
   }
 
   @override
@@ -233,10 +260,12 @@ class _AddProductPageState extends State<AddProductPage> {
   Widget _opcionesSillon(
       BuildContext context, List<DropdownMenuItem<Tela>> telas) {
     return Column(children: [
+      _tipoVenta(context),
       _reesplado(context),
       _almohadones(context),
       _tela(context, telas),
       _patas(context),
+      _precioEspecial(context),
       _comentario(context)
     ]);
   }
@@ -251,7 +280,7 @@ class _AddProductPageState extends State<AddProductPage> {
           SizedBox(
             height: size.height * 0.01,
           ),
-          _esReespaldoEstirado(context),
+          _esReespaldoTirado(context),
         ],
         context);
   }
@@ -262,7 +291,7 @@ class _AddProductPageState extends State<AddProductPage> {
         null,
         [
           _cantidad(_cantDivisionesAlmohadonesController, 'Almohadones'),
-          _esAlmohadonesEstirado(context)
+          _esAlmohadonesTirado(context)
         ],
         context);
   }
@@ -298,6 +327,25 @@ class _AddProductPageState extends State<AddProductPage> {
         context);
   }
 
+  Widget _precioEspecial(BuildContext c) {
+    final size = MediaQuery.of(c).size;
+    return cardField(
+        'Precio',
+        _cambiarPrecioSwitch(c),
+        [
+          cambiarPrecio
+              ? Container(
+                  height: _sizePrecio,
+                  child: _cantidad(_precioEspecialController, 'Precio'),
+                )
+              : Container(),
+          SizedBox(
+            height: size.height * 0.01,
+          )
+        ],
+        context);
+  }
+
   Widget _cantidad(TextEditingController controller, String label) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10),
@@ -320,7 +368,7 @@ class _AddProductPageState extends State<AddProductPage> {
       onChanged: (value) {
         setState(() {
           cambiarPatas = value;
-          _sizePatas = _sizePatas == 0 ? size.height * 0.12 : 0;
+          _sizePatas = _sizePatas == 0 ? size.height * 0.09 : 0;
         });
       },
       activeTrackColor: Colors.yellow[600],
@@ -348,7 +396,7 @@ class _AddProductPageState extends State<AddProductPage> {
     );
   }
 
-  Widget _esReespaldoEstirado(BuildContext c) {
+  Widget _esReespaldoTirado(BuildContext c) {
     final size = MediaQuery.of(c).size;
     return Row(
       children: [
@@ -356,15 +404,15 @@ class _AddProductPageState extends State<AddProductPage> {
           width: size.width * 0.04,
         ),
         Text(
-          'Estirado',
+          'Tirado',
           style: styleLabels,
         ),
         Expanded(child: SizedBox()),
         Switch(
-          value: esEstiradoReespaldo,
+          value: esTiradoReespaldo,
           onChanged: (value) {
             setState(() {
-              esEstiradoReespaldo = value;
+              esTiradoReespaldo = value;
             });
           },
           activeTrackColor: Colors.yellow[600],
@@ -377,7 +425,7 @@ class _AddProductPageState extends State<AddProductPage> {
     );
   }
 
-  Widget _esAlmohadonesEstirado(BuildContext c) {
+  Widget _esAlmohadonesTirado(BuildContext c) {
     final size = MediaQuery.of(context).size;
     return Row(
       children: [
@@ -385,15 +433,15 @@ class _AddProductPageState extends State<AddProductPage> {
           width: size.width * 0.04,
         ),
         Text(
-          'Estirado',
+          'Tirado',
           style: styleLabels,
         ),
         Expanded(child: SizedBox()),
         Switch(
-          value: esEstiradoAlmohadones,
+          value: esTiradoAlmohadones,
           onChanged: (value) {
             setState(() {
-              esEstiradoAlmohadones = value;
+              esTiradoAlmohadones = value;
             });
           },
           activeTrackColor: Colors.yellow[600],
@@ -463,6 +511,7 @@ class _AddProductPageState extends State<AddProductPage> {
       _cantidadCard(context),
       _tela(context, telas),
       _patas(context),
+      _precioEspecial(context),
       _comentario(context)
     ]);
   }
@@ -505,6 +554,8 @@ class _AddProductPageState extends State<AddProductPage> {
         return Column(children: [
           _tapaMesa(),
           _patasMesa(),
+          _precioEspecial(context),
+          _comentario(context)
         ]);
         break;
       default:
@@ -512,6 +563,7 @@ class _AddProductPageState extends State<AddProductPage> {
     return Column(children: [
       _cantidadCard(context),
       _patas(context),
+      _precioEspecial(context),
       _comentario(context)
     ]);
   }
@@ -525,7 +577,11 @@ class _AddProductPageState extends State<AddProductPage> {
   }
 
   Widget _opcionesOtro(BuildContext context) {
-    return Column(children: [_cantidadCard(context)]);
+    return Column(children: [
+      _cantidadCard(context),
+      _precioEspecial(context),
+      _comentario(context)
+    ]);
   }
 
   Widget _buscadorPatas(List<DropdownMenuItem<Patas>> patas) {
@@ -582,6 +638,63 @@ class _AddProductPageState extends State<AddProductPage> {
       onChanged: (value) {
         setState(() {
           selectedValueColor = value?.id;
+        });
+      },
+      isExpanded: true,
+      iconSize: 40,
+      displayClearIcon: true,
+    );
+  }
+
+  Widget _cambiarPrecioSwitch(BuildContext c) {
+    final size = MediaQuery.of(context).size;
+    return Switch(
+      value: cambiarPrecio,
+      onChanged: (value) {
+        setState(() {
+          cambiarPrecio = value;
+          _sizePrecio = _sizePrecio == 0 ? size.height * 0.08 : 0;
+          _precioEspecialController.text =
+              cambiarPrecio ? _precioEspecialController.text : '';
+        });
+      },
+      activeTrackColor: Colors.yellow[600],
+      activeColor: Colors.yellow[100],
+    );
+  }
+
+  Widget _tipoVenta(BuildContext c) {
+    final size = MediaQuery.of(c).size;
+    return cardField(
+        'Tipo de venta',
+        null,
+        [
+          Container(
+            height: size.height * 0.09,
+            child: _tiposDeVenta(),
+          ),
+          SizedBox(
+            height: size.height * 0.01,
+          )
+        ],
+        context);
+  }
+
+  Widget _tiposDeVenta() {
+    return _buscadorTiposVenta(tiposVenta);
+  }
+
+  Widget _buscadorTiposVenta(List<DropdownMenuItem<TipoVenta>> tiposVenta) {
+    return SearchableDropdown.single(
+      items: tiposVenta,
+      value: selectedValueTipoVenta,
+      hint: "Selecciona un tipo de venta",
+      searchHint: "Busca un tipo de venta",
+      onChanged: (value) {
+        setState(() {
+          if (value != null) {
+            selectedValueTipoVenta = value.id;
+          }
         });
       },
       isExpanded: true,

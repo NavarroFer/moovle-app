@@ -17,8 +17,9 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
   List result;
 
   TextEditingController _nombreController = TextEditingController();
-  TextEditingController _apellidoController = TextEditingController();
+  TextEditingController _telefonoController = TextEditingController();
   TextEditingController _direccionController = TextEditingController();
+  TextEditingController _comentarioController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,11 +51,15 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
           SizedBox(
             height: size.height * 0.01,
           ),
-          _apellidoCliente(_apellidoController, 'Apellido'),
+          _telefonoCliente(_telefonoController, 'Telefono'),
           SizedBox(
             height: size.height * 0.01,
           ),
           _direccionCliente(_direccionController, 'Direccion'),
+          SizedBox(
+            height: size.height * 0.01,
+          ),
+          _comentario(_comentarioController, 'Comentario'),
           SizedBox(
             height: size.height * 0.01,
           ),
@@ -65,7 +70,7 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
   Widget _listaProductos(BuildContext c) {
     final size = MediaQuery.of(c).size;
     return Container(
-      height: size.height * 0.34,
+      height: size.height * 0.3,
       child: ListView.builder(
         itemCount: productos.length,
         shrinkWrap: true,
@@ -159,12 +164,16 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
     }
   }
 
-  Widget _textEdit(TextEditingController controller, String label) {
+  Widget _textEdit(TextEditingController controller, String label,
+      {int minLines = 1}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: TextFormField(
         controller: controller,
-        keyboardType: TextInputType.name,
+        keyboardType:
+            minLines == 1 ? TextInputType.name : TextInputType.multiline,
+        minLines: minLines,
+        maxLines: minLines == 1 ? 1 : minLines + 2,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: label,
@@ -177,12 +186,16 @@ class _NuevaVentaPageState extends State<NuevaVentaPage> {
     return _textEdit(nombreController, s);
   }
 
-  _apellidoCliente(apellidoController, String s) {
-    return _textEdit(apellidoController, s);
+  _telefonoCliente(telefonoController, String s) {
+    return _textEdit(telefonoController, s);
   }
 
   _direccionCliente(direccionController, String s) {
     return _textEdit(direccionController, s);
+  }
+
+  _comentario(TextEditingController comentarioController, String s) {
+    return _textEdit(comentarioController, s, minLines: 2);
   }
 
   List<Widget> _grabaPedido(BuildContext context) {

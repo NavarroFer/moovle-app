@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:moovle/src/pages/ventas/envios/envios_page.dart';
+import 'package:moovle/src/pages/ventas/venta/coordinar_entregas_page.dart';
 import 'package:moovle/src/pages/ventas/venta/nueva_venta.dart';
 import 'package:moovle/src/widgets/base_widgets.dart';
 
@@ -28,26 +29,26 @@ class VentasHomePage extends StatelessWidget {
       Container(),
       botonMenu(
           c: context,
-          s: 'Envios',
-          icon: Icons.local_shipping_outlined,
-          color1: Colors.cyan[200],
-          color2: Colors.blue,
+          s: 'A coordinar',
+          icon: CupertinoIcons.text_badge_checkmark,
+          color1: Colors.green[200],
+          color2: Colors.green,
           expanded: true,
-          onPress: onPressEnvios),
+          onPress: onPressACoordinar),
       Container(),
     ];
+  }
+
+  void onPressACoordinar(BuildContext c) {
+    Navigator.pushNamed(c, CoordinarEntregasPage.route);
   }
 
   void onPressNuevaVenta(BuildContext c) {
     Navigator.pushNamed(c, NuevaVentaPage.route);
   }
 
-  void onPressEnvios(BuildContext c) {
-    Navigator.pushNamed(c, EnviosPage.route);
-  }
-
   Widget _botonesMenu(BuildContext context) {
     final botonesVentas = _botonesVentas(context);
-    return botones(context, botonesVentas);
+    return botones(context, botonesVentas, 0.55);
   }
 }
